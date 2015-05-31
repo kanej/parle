@@ -7,7 +7,6 @@
 (nodejs/enable-util-print!)
 
 (def readline (nodejs/require "readline"))
-(def blessed (nodejs/require "blessed"))
 (def fs (nodejs/require "fs"))
 
 ;; nrepl
