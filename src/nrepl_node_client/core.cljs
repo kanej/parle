@@ -1,7 +1,8 @@
 (ns nrepl-node-client.core
     (:require-macros [cljs.core.async.macros :refer [go]])
     (:require [cljs.nodejs :as nodejs]
-              [cljs.core.async :refer [put! chan <!]]))
+              [cljs.core.async :refer [put! chan <!]]
+              [nrepl-node-client.bencode :as bencode]))
 
 (nodejs/enable-util-print!)
 
@@ -11,7 +12,6 @@
 
 ;; nrepl
 
-(def bencode (nodejs/require "bencode"))
 (def net (nodejs/require "net"))
 
 
@@ -37,11 +37,6 @@
 (defn- terminal []
   (.createInterface readline #js {:input (.-stdin js/process) :output (.-stdout js/process)}))
 
-(defn- encode [expr]
-  (.encode bencode #js {:op "eval" :code expr}))
-
-(defn- decode [data]
-  (.decode bencode data "utf8"))
 
 (defn setup-repl []
   (let [read-ch (chan)
@@ -66,8 +61,8 @@
         (read-user-input term read-ch)
         (loop []
           (let [expr (<! eval-ch)
-                encoded-expr (encode expr)]
-            (.once client "data" #(put! eval-result-ch (-> % decode)))
+                encoded-expr (bencode/encode expr)]
+            (.once client "data" #(put! eval-result-ch (-> % bencode/decode)))
             (.write client encoded-expr)
             (recur)))))2))
 
