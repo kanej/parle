@@ -15,7 +15,7 @@
     :builds [{
         :source-paths ["src"]
         :compiler {
-          :output-to "run.js"
+          :output-to "nrepl.js"
           :optimizations :simple
           :pretty-print true
           :target :nodejs}}]})

@@ -3,4 +3,4 @@ target/
 node_modules/
 .lein*
 .nrepl-port
-run.js
+nrepl.js
