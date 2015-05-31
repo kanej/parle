@@ -32,7 +32,7 @@
     client-ch))
 
 (defn read-user-input [term read-ch]
-  (.question term "> " #(put! read-ch %)))
+  (.question term "=> " #(put! read-ch %)))
 
 (defn- terminal []
   (.createInterface readline #js {:input (.-stdin js/process) :output (.-stdout js/process)}))
@@ -47,7 +47,6 @@
   (let [read-ch (chan)
         eval-ch (chan)
         eval-result-ch (chan)
-        ev identity
         term (terminal)]
     (go
       (loop []
@@ -63,15 +62,14 @@
     (go
       (let [repl-port (<! (read-file ".nrepl-port"))
             client (<! (nrepl-connect repl-port))]
-        (println repl-port)
+        (println "Node REPL connected to localhost on port " repl-port)
+        (read-user-input term read-ch)
         (loop []
           (let [expr (<! eval-ch)
                 encoded-expr (encode expr)]
-            (println "Expr: " expr)
             (.once client "data" #(put! eval-result-ch (-> % decode)))
             (.write client encoded-expr)
-            (recur)))))
-    (read-user-input term read-ch)))
+            (recur)))))2))
 
 (defn -main [& args]
   (setup-repl))
