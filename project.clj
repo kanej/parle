@@ -7,7 +7,8 @@
                  [org.clojure/clojurescript "0.0-3269"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]]
   :node-dependencies [[source-map-support "*"]
-                      [blessed "*"]]
+                      [blessed "*"]
+                      [bencode "0.7.0"]]
   :plugins [[lein-cljsbuild "1.0.6"]
             [lein-npm "0.4.0"]]
   :cljsbuild {
