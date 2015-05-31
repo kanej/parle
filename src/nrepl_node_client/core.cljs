@@ -2,7 +2,8 @@
     (:require-macros [cljs.core.async.macros :refer [go]])
     (:require [cljs.nodejs :as nodejs]
               [cljs.core.async :refer [put! chan <!]]
-              [nrepl-node-client.bencode :as bencode]))
+              [nrepl-node-client.bencode :as bencode]
+              [nrepl-node-client.net :as net]))
 
 (nodejs/enable-util-print!)
 
@@ -10,8 +11,6 @@
 (def fs (nodejs/require "fs"))
 
 ;; nrepl
-
-(def net (nodejs/require "net"))
 
 
 (defn str->int
@@ -24,18 +23,19 @@
     (.readFile fs file-name (fn [err data] (put! file-ch (-> data .toString str->int))))
     file-ch))
 
-(defn nrepl-connect [port]
-  (let [client-ch (chan)
-        client (.connect net #js {:port port})]
-    (put! client-ch client)
-    client-ch))
-
 (defn read-user-input [term read-ch]
   (.question term "=> " #(put! read-ch %)))
 
 (defn- terminal []
   (.createInterface readline #js {:input (.-stdin js/process) :output (.-stdout js/process)}))
 
+(defn nrepl-connect [port]
+  (net/connect port))
+
+(defn perform-op [client op callback-fn]
+  (let [encoded-op (bencode/encode op)]
+    (.once client "data" #(callback-fn (-> % bencode/decode)))
+    (.write client encoded-op)))
 
 (defn setup-repl []
   (let [read-ch (chan)
@@ -43,27 +43,24 @@
         eval-result-ch (chan)
         term (terminal)]
     (go
-      (loop []
-        (let [expr (<! read-ch)]
-          (if (= expr "exit")
-            (.exit js/process)
-            (let [eval-ch (put! eval-ch expr)
-                  result (<! eval-result-ch)]
-              (println (.-value result))
+     (loop []
+       (let [expr (<! read-ch)]
+         (if (= expr "exit")
+           (.exit js/process)
+           (let [eval-ch (put! eval-ch expr)
+                 result (<! eval-result-ch)]
+             (println (.-value result))
 
-              (read-user-input term read-ch)
-              (recur))))))
+             (read-user-input term read-ch)
+             (recur))))))
     (go
       (let [repl-port (<! (read-file ".nrepl-port"))
-            client (<! (nrepl-connect repl-port))]
+            client (nrepl-connect repl-port)]
         (println "Node REPL client connected to NREPL at localhost on port " repl-port)
         (read-user-input term read-ch)
-        (loop []
-          (let [expr (<! eval-ch)
-                encoded-expr (bencode/encode expr)]
-            (.once client "data" #(put! eval-result-ch (-> % bencode/decode)))
-            (.write client encoded-expr)
-            (recur)))))2))
+        (loop [op (<! eval-ch)]
+          (perform-op client op #(put! eval-result-ch %))
+          (recur (<! eval-ch)))))))
 
 (defn -main [& args]
   (setup-repl))
