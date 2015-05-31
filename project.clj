@@ -1,6 +1,6 @@
-(defproject cljs-node "0.1.0-SNAPSHOT"
-  :description "Nodejs repl for Clojure"
-  :url "http://example.com/FIXME"
+(defproject nrepl-node-client "0.1.0-SNAPSHOT"
+  :description "Nodejs replrepl for Clojure"
+  :url "http://github.com/nrepl-node-client"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.7.0-RC1"]

@@ -1,4 +1,4 @@
-(ns cljs-node.core
+(ns nrepl-node-client.core
     (:require-macros [cljs.core.async.macros :refer [go]])
     (:require [cljs.nodejs :as nodejs]
               [cljs.core.async :refer [put! chan <!]]))
@@ -62,7 +62,7 @@
     (go
       (let [repl-port (<! (read-file ".nrepl-port"))
             client (<! (nrepl-connect repl-port))]
-        (println "Node REPL connected to localhost on port " repl-port)
+        (println "Node REPL client connected to NREPL at localhost on port " repl-port)
         (read-user-input term read-ch)
         (loop []
           (let [expr (<! eval-ch)
