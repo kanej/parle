@@ -3,8 +3,8 @@
 
 (def bencode (nodejs/require "bencode"))
 
-(defn encode [expr]
-  (.encode bencode #js {:op "eval" :code expr}))
+(defn encode [data]
+  (.encode bencode (clj->js data)))
 
 (defn decode [data]
   (.decode bencode data "utf8"))
