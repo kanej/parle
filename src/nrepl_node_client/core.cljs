@@ -3,26 +3,17 @@
     (:require [cljs.nodejs :as nodejs]
               [cljs.core.async :refer [put! chan <!]]
 
+              [nrepl-node-client.config :refer [read-file]]
               [nrepl-node-client.net :as net]
               [nrepl-node-client.nrepl :as nrepl]
               [nrepl-node-client.terminal :refer [new-terminal read-user-input]]))
 
 (nodejs/enable-util-print!)
 
-(def fs (nodejs/require "fs"))
-
-;; nrepl
-
-
-(defn str->int
-  [s]
-  (when (re-matches #"^\d+$" s)
-    (js/parseInt s)))
-
-(defn read-file [file-name]
-  (let [file-ch (chan)]
-    (.readFile fs file-name (fn [err data] (put! file-ch (-> data .toString str->int))))
-    file-ch))
+(defn- read-repl-port []
+  (let [repl-port-ch (chan)]
+    (read-file ".nrepl-port" #(put! repl-port-ch %))
+    repl-port-ch))
 
 (defn setup-repl []
   (let [read-ch (chan)
@@ -41,7 +32,7 @@
              (read-user-input terminal #(put! read-ch %))
              (recur))))))
     (go
-      (let [repl-port (<! (read-file ".nrepl-port"))
+      (let [repl-port (<! (read-repl-port))
             nrepl-client (nrepl/connect repl-port)]
         (println "Node REPL client connected to NREPL at localhost on port " repl-port)
         (read-user-input terminal #(put! read-ch %))
