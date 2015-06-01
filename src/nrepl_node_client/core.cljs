@@ -4,11 +4,11 @@
               [cljs.core.async :refer [put! chan <!]]
 
               [nrepl-node-client.net :as net]
-              [nrepl-node-client.nrepl :as nrepl]))
+              [nrepl-node-client.nrepl :as nrepl]
+              [nrepl-node-client.terminal :refer [new-terminal read-user-input]]))
 
 (nodejs/enable-util-print!)
 
-(def readline (nodejs/require "readline"))
 (def fs (nodejs/require "fs"))
 
 ;; nrepl
@@ -24,17 +24,11 @@
     (.readFile fs file-name (fn [err data] (put! file-ch (-> data .toString str->int))))
     file-ch))
 
-(defn read-user-input [term read-ch]
-  (.question term "=> " #(put! read-ch %)))
-
-(defn- terminal []
-  (.createInterface readline #js {:input (.-stdin js/process) :output (.-stdout js/process)}))
-
 (defn setup-repl []
   (let [read-ch (chan)
         eval-ch (chan)
         eval-result-ch (chan)
-        term (terminal)]
+        terminal (new-terminal)]
     (go
      (loop []
        (let [expr (<! read-ch)]
@@ -44,13 +38,13 @@
                  result (<! eval-result-ch)]
              (println (.-value result))
 
-             (read-user-input term read-ch)
+             (read-user-input terminal #(put! read-ch %))
              (recur))))))
     (go
       (let [repl-port (<! (read-file ".nrepl-port"))
             nrepl-client (nrepl/connect repl-port)]
         (println "Node REPL client connected to NREPL at localhost on port " repl-port)
-        (read-user-input term read-ch)
+        (read-user-input terminal #(put! read-ch %))
         (loop [expr (<! eval-ch)]
           (nrepl/perform-op nrepl-client {:op "eval" :code expr} #(put! eval-result-ch %))
           (recur (<! eval-ch)))))))
