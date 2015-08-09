@@ -2,11 +2,14 @@
     (:require-macros [cljs.core.async.macros :refer [go]])
     (:require [cljs.nodejs :as nodejs]
               [cljs.core.async :refer [put! chan <!]]
+              [cljs.pprint :refer [pprint]]
 
               [nrepl-node-client.config :refer [read-file]]
               [nrepl-node-client.net :as net]
               [nrepl-node-client.nrepl :as nrepl]
               [nrepl-node-client.terminal :refer [new-terminal read-user-input]]))
+
+(def *debug* false)
 
 (nodejs/enable-util-print!)
 
@@ -22,14 +25,18 @@
         terminal (new-terminal)]
     (go
      (loop []
-       (let [expr (<! read-ch)]
+       (let [result (<! eval-result-ch)]
+         (when *debug* (.log js/console result))
+         (println (aget result "value"))
+         (when (aget result "status") (read-user-input terminal #(put! read-ch %)))
+         (recur))))
+    (go
+      (loop []
+        (let [expr (<! read-ch)]
          (if (= expr "exit")
            (.exit js/process)
-           (let [eval-ch (put! eval-ch expr)
-                 result (<! eval-result-ch)]
-             (println (.-value result))
-
-             (read-user-input terminal #(put! read-ch %))
+           (do
+             (put! eval-ch expr)
              (recur))))))
     (go
       (let [repl-port (<! (read-repl-port))

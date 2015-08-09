@@ -9,7 +9,8 @@
   Repl
   (perform-op [this op callback-fn]
     (let [encoded-op (bencode/encode op)]
-      (.once client "data" #(callback-fn (-> % bencode/decode)))
+      (.removeAllListeners client "data")
+      (.on client "data" #(callback-fn (-> % bencode/decode)))
       (.write client encoded-op))))
 
 (defn connect [port]
