@@ -22,13 +22,14 @@
   (let [read-ch (chan)
         eval-ch (chan)
         eval-result-ch (chan)
-        terminal (new-terminal)]
+        terminal (new-terminal)
+        rui (fn [] (read-user-input terminal #(put! read-ch %)))]
     (go
      (loop []
        (let [result (<! eval-result-ch)]
          (when *debug* (.log js/console result))
-         (println (aget result "value"))
-         (when (aget result "status") (read-user-input terminal #(put! read-ch %)))
+         (when-let [token (or (aget result "out") (aget result "value"))] (print token))
+         (when (aget result "value") (rui))
          (recur))))
     (go
       (loop []
@@ -42,7 +43,7 @@
       (let [repl-port (<! (read-repl-port))
             nrepl-client (nrepl/connect repl-port)]
         (println "Node REPL client connected to NREPL at localhost on port " repl-port)
-        (read-user-input terminal #(put! read-ch %))
+        (rui)
         (loop [expr (<! eval-ch)]
           (nrepl/perform-op nrepl-client {:op "eval" :code expr} #(put! eval-result-ch %))
           (recur (<! eval-ch)))))))
