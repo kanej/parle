@@ -30,7 +30,7 @@
         clj-version (aget server-description "versions" "clojure" "version-string")
         java-version (aget server-description "versions" "java" "version-string")]
     ;;(.log js/console server-description)
-    (println "Node REPL client connected to NREPL at localhost on port" repl-port)
+    (println "Connecting to nREPL at localhost on port" repl-port)
     (println "node-nrepl-client" version ", nREPL" nrepl-version)
     (println "Clojure" clj-version)
     (println "Java" java-version)
@@ -54,7 +54,9 @@
       (loop []
         (let [expr (<! read-ch)]
          (if (or (= expr "exit") (= expr "quit") (= expr "(exit)") (= expr "(quit)"))
-           (.exit js/process)
+           (do
+             (println "Bye for now!")
+             (.exit js/process))
            (do
              (put! eval-ch expr)
              (recur))))))
