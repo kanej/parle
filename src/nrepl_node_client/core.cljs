@@ -10,8 +10,10 @@
               [nrepl-node-client.terminal :refer [new-terminal read-user-input]]))
 
 (def *debug* false)
-
 (def version "0.0.1")
+
+(defonce current-ns (atom 'user))
+(defonce current-session (atom nil))
 
 (nodejs/enable-util-print!)
 
@@ -19,6 +21,11 @@
   (let [repl-port-ch (chan)]
     (read-file ".nrepl-port" #(put! repl-port-ch %))
     repl-port-ch))
+
+(defn- new-session [nrepl-client]
+  (let [result-chan (chan)]
+    (nrepl/perform-op nrepl-client {:op "clone"} #(put! result-chan (aget % "new-session")))
+    result-chan))
 
 (defn- async-perform-op [nrepl-client op]
   (let [result-chan (chan)]
@@ -37,17 +44,21 @@
     (println "    Exit: (exit) or (quit)")
     (println "")))
 
+(defn- prompt []
+  (str @current-ns "=> "))
+
 (defn setup-repl []
   (let [read-ch (chan)
         eval-ch (chan)
         eval-result-ch (chan)
         terminal (new-terminal)
-        rui (fn [] (read-user-input terminal #(put! read-ch %)))]
+        rui (fn [] (read-user-input terminal #(put! read-ch %) {:prompt (prompt)}))]
     (go
      (loop []
        (let [result (<! eval-result-ch)]
          (when *debug* (.log js/console result))
          (when-let [token (or (aget result "out") (aget result "value"))] (print token))
+         (when-let [update-ns (aget result "ns")] (reset! current-ns (symbol update-ns)))
          (when (aget result "value") (rui))
          (recur))))
     (go
@@ -63,11 +74,12 @@
     (go
       (let [repl-port (<! (read-repl-port))
             nrepl-client (nrepl/connect repl-port)
-            server-description (<! (async-perform-op nrepl-client {:op "describe"}))]
+            session (<! (new-session nrepl-client))
+            server-description (<! (async-perform-op nrepl-client {:op "describe" :session session}))]
         (print-intro server-description repl-port)
         (rui)
         (loop [expr (<! eval-ch)]
-          (nrepl/perform-op nrepl-client {:op "eval" :code expr} #(put! eval-result-ch %))
+          (nrepl/perform-op nrepl-client {:op "eval" :code expr :session session} #(put! eval-result-ch %))
           (recur (<! eval-ch)))))))
 
 (defn -main [& args]
