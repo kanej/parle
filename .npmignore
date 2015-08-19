@@ -1,0 +1,6 @@
+/src
+/scratch
+.nrepl-port
+.lein-repl-history
+*.tgz
+*.clj

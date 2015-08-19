@@ -4,3 +4,4 @@ node_modules/
 .lein*
 .nrepl-port
 parle.js
+parle*.tgz

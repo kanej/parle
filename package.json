@@ -1,0 +1,29 @@
+{
+  "name": "parle",
+  "version": "0.1.0",
+  "description": "Clojure nrepl command line client",
+  "main": "parle.js",
+  "bin": { "parle": "./parle.js" },
+  "dependencies": {
+    "source-map-support": "^0.3.2",
+    "bencode": "^0.7.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kanej/nrepl-node-client.git"
+  },
+  "keywords": [
+    "clojure",
+    "nrepl"
+  ],
+  "author": "John Kane",
+  "license": "EPL-1.0",
+  "bugs": {
+    "url": "https://github.com/kanej/nrepl-node-client/issues"
+  },
+  "homepage": "https://github.com/kanej/nrepl-node-client"
+}
