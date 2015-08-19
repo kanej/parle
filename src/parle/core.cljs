@@ -10,7 +10,7 @@
               [parle.terminal :refer [new-terminal read-user-input]]))
 
 (def *debug* false)
-(def version "0.0.1")
+(def version "0.1.0")
 
 (defonce current-ns (atom 'user))
 (defonce current-session (atom nil))
@@ -38,7 +38,7 @@
         java-version (aget server-description "versions" "java" "version-string")]
     ;;(.log js/console server-description)
     (println "Connecting to nREPL at localhost on port" repl-port)
-    (println "node-nrepl-client" version ", nREPL" nrepl-version)
+    (println (str "parle " version ", nREPL " nrepl-version))
     (println "Clojure" clj-version)
     (println "Java" java-version)
     (println "    Exit: (exit) or (quit)")
