@@ -1,13 +1,13 @@
-(ns nrepl-node-client.core
+(ns parle.core
     (:require-macros [cljs.core.async.macros :refer [go]])
     (:require [cljs.nodejs :as nodejs]
               [cljs.core.async :refer [put! chan <!]]
               [cljs.pprint :refer [pprint]]
 
-              [nrepl-node-client.config :refer [read-file]]
-              [nrepl-node-client.net :as net]
-              [nrepl-node-client.nrepl :as nrepl]
-              [nrepl-node-client.terminal :refer [new-terminal read-user-input]]))
+              [parle.config :refer [read-file]]
+              [parle.net :as net]
+              [parle.nrepl :as nrepl]
+              [parle.terminal :refer [new-terminal read-user-input]]))
 
 (def *debug* false)
 (def version "0.0.1")

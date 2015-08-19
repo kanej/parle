@@ -1,4 +1,4 @@
-(ns nrepl-node-client.net
+(ns parle.net
     (:require [cljs.nodejs :as nodejs]))
 
 (def net (nodejs/require "net"))

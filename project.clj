@@ -1,5 +1,5 @@
-(defproject nrepl-node-client "0.1.0-SNAPSHOT"
-  :description "Nodejs replrepl for Clojure"
+(defproject parle "0.1.0-SNAPSHOT"
+  :description "Nodejs nrepl client"
   :url "http://github.com/nrepl-node-client"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
@@ -14,7 +14,7 @@
     :builds [{
         :source-paths ["src"]
         :compiler {
-          :output-to "nrepl.js"
+          :output-to "parle.js"
           :optimizations :simple
           :pretty-print true
           :target :nodejs}}]})

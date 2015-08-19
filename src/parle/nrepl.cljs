@@ -1,6 +1,6 @@
-(ns nrepl-node-client.nrepl
-    (:require [nrepl-node-client.net :as net]
-              [nrepl-node-client.bencode :as bencode]))
+(ns parle.nrepl
+    (:require [parle.net :as net]
+              [parle.bencode :as bencode]))
 
 (defprotocol Repl
   (perform-op [this op callback-fn]))

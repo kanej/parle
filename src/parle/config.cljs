@@ -1,4 +1,4 @@
-(ns nrepl-node-client.config
+(ns parle.config
     (:require [cljs.nodejs :as nodejs]))
 
 (def fs (nodejs/require "fs"))

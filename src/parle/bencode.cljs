@@ -1,4 +1,4 @@
-(ns nrepl-node-client.bencode
+(ns parle.bencode
     (:require [cljs.nodejs :as nodejs]))
 
 (def bencode (nodejs/require "bencode"))
