@@ -4,7 +4,7 @@
               [cljs.core.async :refer [put! chan <!]]
               [cljs.pprint :refer [pprint]]
 
-              [parle.config :refer [read-file args->map]]
+              [parle.config :refer [read-nrepl-port-file args->map]]
               [parle.net :as net]
               [parle.nrepl :as nrepl]
               [parle.terminal :refer [new-terminal read-user-input]]))
@@ -21,7 +21,11 @@
   (let [repl-port-ch (chan)]
     (if (not (nil? port))
       (put! repl-port-ch port)
-      (read-file ".nrepl-port" #(put! repl-port-ch %)))
+      (read-nrepl-port-file (fn [port]
+                              (when-not port
+                                (println "Please specify a port, or run parle in a directory with a .nrepl-port file.")
+                                (.exit js/process))
+                              (put! repl-port-ch port))))
     repl-port-ch))
 
 (defn- new-session [nrepl-client]

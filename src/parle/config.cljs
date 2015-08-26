@@ -8,9 +8,18 @@
   (when (re-matches #"^\d+$" s)
     (js/parseInt s)))
 
-(defn read-file [file-name callback-fn]
-  (.readFile fs file-name (fn [err data] (-> data .toString str->int callback-fn))))
+(defn- read-file [file-name callback-fn]
+  (.readFile fs file-name (fn [err data] (-> data .toString callback-fn))))
 
+(defn- file-exists? [file-name]
+  (.existsSync fs file-name))
+
+(def nrepl-port-file ".nrepl-port")
+
+(defn read-nrepl-port-file [callback-fn]
+  (if (file-exists? nrepl-port-file)
+    (read-file nrepl-port-file #(-> % .toString str->int callback-fn))
+    (callback-fn nil)))
 
 (def port-mapping [:port #(-> % name js/parseInt)])
 (def host-mapping [:host #(-> % name)])
