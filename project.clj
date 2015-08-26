@@ -1,4 +1,4 @@
-(defproject parle "0.1.0-SNAPSHOT"
+(defproject parle "0.2.0-SNAPSHOT"
   :description "Nodejs nrepl client"
   :url "http://github.com/nrepl-node-client"
   :license {:name "Eclipse Public License"

@@ -5,3 +5,4 @@ node_modules/
 .nrepl-port
 parle.js
 parle*.tgz
+scratch.js

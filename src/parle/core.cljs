@@ -4,22 +4,24 @@
               [cljs.core.async :refer [put! chan <!]]
               [cljs.pprint :refer [pprint]]
 
-              [parle.config :refer [read-file]]
+              [parle.config :refer [read-file args->map]]
               [parle.net :as net]
               [parle.nrepl :as nrepl]
               [parle.terminal :refer [new-terminal read-user-input]]))
 
 (def *debug* false)
-(def version "0.1.0")
+(def version "0.2.0")
 
 (defonce current-ns (atom 'user))
 (defonce current-session (atom nil))
 
 (nodejs/enable-util-print!)
 
-(defn- read-repl-port []
+(defn- resolve-port [{:keys [port]}]
   (let [repl-port-ch (chan)]
-    (read-file ".nrepl-port" #(put! repl-port-ch %))
+    (if (not (nil? port))
+      (put! repl-port-ch port)
+      (read-file ".nrepl-port" #(put! repl-port-ch %)))
     repl-port-ch))
 
 (defn- new-session [nrepl-client]
@@ -47,7 +49,7 @@
 (defn- prompt []
   (str @current-ns "=> "))
 
-(defn setup-repl []
+(defn setup-repl [options]
   (let [read-ch (chan)
         eval-ch (chan)
         eval-result-ch (chan)
@@ -72,7 +74,7 @@
              (put! eval-ch expr)
              (recur))))))
     (go
-      (let [repl-port (<! (read-repl-port))
+      (let [repl-port (<! (resolve-port options))
             nrepl-client (nrepl/connect repl-port)
             session (<! (new-session nrepl-client))
             server-description (<! (async-perform-op nrepl-client {:op "describe" :session session}))]
@@ -83,6 +85,7 @@
           (recur (<! eval-ch)))))))
 
 (defn -main [& args]
-  (setup-repl))
+  (let [options (-> args args->map)]
+    (setup-repl options)))
 
 (set! *main-cli-fn* -main)
