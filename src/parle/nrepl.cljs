@@ -13,5 +13,8 @@
       (.on client "data" #(callback-fn (-> % bencode/decode)))
       (.write client encoded-op))))
 
-(defn connect [port]
-  (->Nrepl (net/connect port) port))
+(defn connect [port callback-fn]
+  (net/connect port (fn [client]
+                      (if (= client :ECONNREFUSED)
+                        (callback-fn :ECONNREFUSED)
+                        (callback-fn (->Nrepl client port))))))

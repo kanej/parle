@@ -10,7 +10,7 @@
               [parle.terminal :refer [new-terminal read-user-input]]))
 
 (def *debug* false)
-(def version "0.2.0")
+(def version "0.3.0")
 
 (defonce current-ns (atom 'user))
 (defonce current-session (atom nil))
@@ -27,6 +27,17 @@
                                 (.exit js/process))
                               (put! repl-port-ch port))))
     repl-port-ch))
+
+(defn- connect-nrepl [repl-port]
+  (let [nrepl-chan (chan)]
+    (nrepl/connect repl-port (fn [client]
+                               (cond
+                                 (= client :ECONNREFUSED) (do
+                                                            (println "Unable to connect to nrepl server on port " repl-port)
+                                                            (.exit js/process))
+                                 :else (put! nrepl-chan client))))
+
+    nrepl-chan))
 
 (defn- new-session [nrepl-client]
   (let [result-chan (chan)]
@@ -79,7 +90,7 @@
              (recur))))))
     (go
       (let [repl-port (<! (resolve-port options))
-            nrepl-client (nrepl/connect repl-port)
+            nrepl-client (<! (connect-nrepl repl-port))
             session (<! (new-session nrepl-client))
             server-description (<! (async-perform-op nrepl-client {:op "describe" :session session}))]
         (print-intro server-description repl-port)
