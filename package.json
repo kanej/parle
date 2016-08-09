@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/kanej/nrepl-node-client.git"
+    "url": "https://github.com/kanej/parle.git"
   },
   "keywords": [
     "clojure",
@@ -23,7 +23,7 @@
   "author": "John Kane",
   "license": "EPL-1.0",
   "bugs": {
-    "url": "https://github.com/kanej/nrepl-node-client/issues"
+    "url": "https://github.com/kanej/parle/issues"
   },
-  "homepage": "https://github.com/kanej/nrepl-node-client"
+  "homepage": "https://github.com/kanej/parle"
 }
