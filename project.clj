@@ -3,13 +3,13 @@
   :url "http://github.com/kanej/parle"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.7.0"]
-                 [org.clojure/clojurescript "1.7.48"]
-                 [org.clojure/core.async "0.1.346.0-17112a-alpha"]]
-  :node-dependencies [[source-map-support "*"]
-                      [bencode "0.7.0"]]
-  :plugins [[lein-cljsbuild "1.0.6"]
-            [lein-npm "0.4.0"]]
+  :dependencies [[org.clojure/clojure "1.8.0"]
+                 [org.clojure/clojurescript "1.9.89"]
+                 [org.clojure/core.async "0.2.385"]]
+  :npm {:dependencies [[source-map-support "*"]
+                      [bencode "0.10.0"]]}
+  :plugins [[lein-cljsbuild "1.1.3"]
+            [lein-npm "0.6.2"]]
   :cljsbuild {
     :builds [{
         :source-paths ["src"]
