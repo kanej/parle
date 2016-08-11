@@ -1,5 +1,5 @@
 (ns parle.terminal
-    (:require [cljs.nodejs :as nodejs]))
+  (:require [cljs.nodejs :as nodejs]))
 
 (def readline (nodejs/require "readline"))
 

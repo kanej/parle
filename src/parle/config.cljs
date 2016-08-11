@@ -1,5 +1,5 @@
 (ns parle.config
-    (:require [cljs.nodejs :as nodejs]))
+  (:require [cljs.nodejs :as nodejs]))
 
 (def fs (nodejs/require "fs"))
 

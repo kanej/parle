@@ -1,13 +1,13 @@
 (ns parle.core
-    (:require-macros [cljs.core.async.macros :refer [go]])
-    (:require [cljs.nodejs :as nodejs]
-              [cljs.core.async :refer [put! chan <!]]
-              [cljs.pprint :refer [pprint]]
+  (:require-macros [cljs.core.async.macros :refer [go]])
+  (:require [cljs.nodejs :as nodejs]
+            [cljs.core.async :refer [put! chan <!]]
+            [cljs.pprint :refer [pprint]]
 
-              [parle.config :refer [read-nrepl-port-file args->map]]
-              [parle.net :as net]
-              [parle.nrepl :as nrepl]
-              [parle.terminal :refer [new-terminal read-user-input]]))
+            [parle.config :refer [read-nrepl-port-file args->map]]
+            [parle.net :as net]
+            [parle.nrepl :as nrepl]
+            [parle.terminal :refer [new-terminal read-user-input]]))
 
 (def *debug* false)
 (def version "0.3.0")
@@ -71,23 +71,23 @@
         terminal (new-terminal)
         rui (fn [] (read-user-input terminal #(put! read-ch %) {:prompt (prompt)}))]
     (go
-     (loop []
-       (let [result (<! eval-result-ch)]
-         (when *debug* (.log js/console result))
-         (when-let [token (or (aget result "out") (aget result "value") (aget result "err"))] (print token))
-         (when-let [update-ns (aget result "ns")] (reset! current-ns (symbol update-ns)))q
-         (when (or (= (get (aget result "status") 0) "done") (aget result "err")) (rui))
-         (recur))))
+      (loop []
+        (let [result (<! eval-result-ch)]
+          (when *debug* (.log js/console result))
+          (when-let [token (or (aget result "out") (aget result "value") (aget result "err"))] (print token))
+          (when-let [update-ns (aget result "ns")] (reset! current-ns (symbol update-ns))) q
+          (when (or (= (get (aget result "status") 0) "done") (aget result "err")) (rui))
+          (recur))))
     (go
       (loop []
         (let [expr (<! read-ch)]
-         (if (or (= expr "exit") (= expr "quit") (= expr "(exit)") (= expr "(quit)"))
-           (do
-             (println "Bye for now!")
-             (.exit js/process))
-           (do
-             (put! eval-ch expr)
-             (recur))))))
+          (if (or (= expr "exit") (= expr "quit") (= expr "(exit)") (= expr "(quit)"))
+            (do
+              (println "Bye for now!")
+              (.exit js/process))
+            (do
+              (put! eval-ch expr)
+              (recur))))))
     (go
       (let [repl-port (<! (resolve-port options))
             nrepl-client (<! (connect-nrepl repl-port))

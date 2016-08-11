@@ -9,7 +9,8 @@
   :npm {:dependencies [[source-map-support "*"]
                       [bencode "0.10.0"]]}
   :plugins [[lein-cljsbuild "1.1.3"]
-            [lein-npm "0.6.2"]]
+            [lein-npm "0.6.2"]
+            [lein-cljfmt "0.5.3"]]
   :cljsbuild {
     :builds [{
         :source-paths ["src"]

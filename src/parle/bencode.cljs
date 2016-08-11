@@ -1,5 +1,5 @@
 (ns parle.bencode
-    (:require [cljs.nodejs :as nodejs]))
+  (:require [cljs.nodejs :as nodejs]))
 
 (def bencode (nodejs/require "bencode"))
 

@@ -1,5 +1,5 @@
 (ns parle.net
-    (:require [cljs.nodejs :as nodejs]))
+  (:require [cljs.nodejs :as nodejs]))
 
 (def net (nodejs/require "net"))
 
