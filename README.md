@@ -27,3 +27,17 @@ In a separate terminal
 Optionally, parle can pick up the .nrepl-port file from the current directory, so if the parle command
 is run from the same directory as the lein repl is started it will pick it up automatically.
 
+Development
+-----------
+
+Build the clojurescript code. This outputs to `./parles.js`. The build is done by cljsbuild:
+
+```bash
+> lein cljsbuild once
+```
+
+The development version can then be run through node:
+
+```bash
+> node parle.js
+```

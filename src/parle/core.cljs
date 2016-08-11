@@ -36,7 +36,6 @@
                                                             (println "Unable to connect to nrepl server on port " repl-port)
                                                             (.exit js/process))
                                  :else (put! nrepl-chan client))))
-
     nrepl-chan))
 
 (defn- new-session [nrepl-client]
