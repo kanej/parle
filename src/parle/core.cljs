@@ -58,7 +58,10 @@
     (println (str "parle " version ", nREPL " nrepl-version))
     (println "Clojure" clj-version)
     (println "Java" java-version)
+    (println "    Docs: (doc function-name-here)")
+    (println " Javadoc: (javadoc java-object-or-class-here)")
     (println "    Exit: (exit) or (quit)")
+    (println " Results: Stored in vars *1, *2, *3, an exception in *e")
     (println "")))
 
 (defn- prompt []
