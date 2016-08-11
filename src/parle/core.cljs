@@ -76,7 +76,7 @@
          (when *debug* (.log js/console result))
          (when-let [token (or (aget result "out") (aget result "value") (aget result "err"))] (print token))
          (when-let [update-ns (aget result "ns")] (reset! current-ns (symbol update-ns)))q
-         (when (or (aget result "value") (aget result "err")) (rui))
+         (when (or (= (get (aget result "status") 0) "done") (aget result "err")) (rui))
          (recur))))
     (go
       (loop []
